@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using minimal_api; 
+using minimal_api;
+using minimal_api.Dominio.DTOs;
 using minimal_api.Dominio.Entidades;
-using minimal_api.Dominio.Enuns;
+using minimal_api.Dominio.Enums;
 using minimal_api.Dominio.Interfaces;
 using minimal_api.Dominio.ModelViews;
 using minimal_api.Dominio.Servicos;
-using minimal_api.DTOs;
-using minimal_api.Infraestrutura.Db;
+using minimal_api.Infraestrutura.DB;
+
+
 
 public class Startup
 {
@@ -149,11 +151,11 @@ public class Startup
             }).AllowAnonymous().WithTags("Administradores");
 
             endpoints.MapGet("/administradores", ([FromQuery] int? pagina, IAdministradorServico administradorServico) => {
-                var adms = new List<AdministradorModelView>();
+                var adms = new List<AdministradorModelViews>();
                 var administradores = administradorServico.Todos(pagina);
                 foreach(var adm in administradores)
                 {
-                    adms.Add(new AdministradorModelView{
+                    adms.Add(new AdministradorModelViews{
                         Id = adm.Id,
                         Email = adm.Email,
                         Perfil = adm.Perfil
@@ -168,7 +170,7 @@ public class Startup
             endpoints.MapGet("/Administradores/{id}", ([FromRoute] int id, IAdministradorServico administradorServico) => {
                 var administrador = administradorServico.BuscaPorId(id);
                 if(administrador == null) return Results.NotFound();
-                return Results.Ok(new AdministradorModelView{
+                return Results.Ok(new AdministradorModelViews{
                         Id = administrador.Id,
                         Email = administrador.Email,
                         Perfil = administrador.Perfil
@@ -201,7 +203,7 @@ public class Startup
 
                 administradorServico.Incluir(administrador);
 
-                return Results.Created($"/administrador/{administrador.Id}", new AdministradorModelView{
+                return Results.Created($"/administrador/{administrador.Id}", new AdministradorModelViews{
                     Id = administrador.Id,
                     Email = administrador.Email,
                     Perfil = administrador.Perfil
